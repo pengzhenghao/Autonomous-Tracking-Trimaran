@@ -11,17 +11,20 @@ class Drawer():
     def __init__(self):
         pass
 
-    def drawFromData(self, data, name):
-        self.draw(data, name)
+    def drawFromData(self, data, name, cost=None):
+        self.draw(data, name, cost)
 
     def drawFromFile(self, name):
         data = self.readOneCsvFile(name + '.csv')
         self.draw(data, name)
 
-    def draw(self, data, name):
+    def draw(self, data, name, cost=None):
         fig = plt.figure(figsize=(17, 8))
-        fig.suptitle(name)
+        fig.suptitle(name+'\n Cost: '+str(cost))
         gs = GridSpec(3, 2)
+
+        # if cost:
+        #     fig.text(0,0.90,'Cost: '+str(cost))
 
         axxy = fig.add_subplot(gs[:, 0])
         axuv = fig.add_subplot(gs[0, 1])

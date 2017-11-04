@@ -1,7 +1,6 @@
 import math
 from math import pi
 
-
 RADIUS = 2
 
 
@@ -12,6 +11,18 @@ class Maker:
         self.s = points[0]
         self.e = points[1]
         self.pointer = 1
+
+    def getCost(self, state):
+        x, y = state['x'], state['y']
+        x0, y0 = self.s
+        x1, y1 = self.e
+        if x1==x0:
+            return (y-y1)**2
+        k = (y1-y0)/(x1-x0)
+        a = x1 * k**2 + x + (y - y1)*k
+        b = y1 - (x1-a)*k
+        dist = (a-x)**2+(b-y)**2
+        return dist
 
 
     def getDecision(self, state):

@@ -78,9 +78,11 @@ if __name__ == '__main__':
     maker = Maker(points)
     state = old_state
     data = []
+    cost = 0
     for i in range(6000):
 
         ideal_angle = maker.getDecision(state)
+        cost += maker.getCost(state)
         if ideal_angle==-1000:
             break
 
@@ -92,4 +94,4 @@ if __name__ == '__main__':
 
     file_name = './data/' + time.strftime("%Y-%m-%d__%H:%M", time.localtime())
     drawer = Drawer()
-    drawer.drawFromData(data, file_name)
+    drawer.drawFromData(data, file_name, cost)
