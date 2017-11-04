@@ -40,7 +40,7 @@ self.s = self.points[0]
 self.e = self.points[1]
 self.pointer = 1
 ```
-`self.points`是一个二维list，`self.pointer`是一个数字，表示目前哪个点是目标点。`self.s`和`self.e`被初始化为(0,0)点和(0,50)点，你可以直接调用它们：
+`self.points`是一个二维list，`self.pointer`是一个数字，表示目前哪个点是目标点。`self.s`和`self.e`被初始化为(0,0)点和(0,50)点，你可以直接取出它们的值方便后续的运算：
 ```
 x0, y0 = self.s
 x1, y1 = self.e
