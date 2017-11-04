@@ -27,6 +27,33 @@ state = {
 x = state['x']
 y = state['y']
 ```
+decisionMaker中内置了你在`simulator.py`中预设好的一系列目标点的坐标，船在距离目标点`RAIDUS=2`米内，即被视为到达目标点。decisionMaker的构造函数中，为你提供了以下几个变量，第一个是点集，点集由simulator传入。
+```
+self.points = [
+    [0, 0],
+    [0, 50],
+    [50, 50],
+    [50, 0],
+    [0, 0]
+]
+self.s = self.points[0]
+self.e = self.points[1]
+self.pointer = 1
+```
+`self.points`是一个二维list，`self.pointer`是一个数字，表示目前哪个点是目标点。`self.s`和`self.e`被初始化为(0,0)点和(0,50)点，你可以直接调用它们：
+```
+x0, y0 = self.s
+x1, y1 = self.e
+```
+记得添加一个判断条件，判断船是否到了目标点:
+```
+        if ((x1-x)**2 + (y1-y)**2) < RADIUS**2:
+            if self.pointer == (len(self.points) - 1):
+                return -1000
+            self.s = self.points[self.pointer]
+            self.e = self.points[self.pointer+1]
+            self.pointer += 1
+```
 你需要返回一个理想首向角，首向角范围仍然是0~2PI。
 
 
