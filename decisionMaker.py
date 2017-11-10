@@ -1,7 +1,7 @@
 import math
 from math import pi
 
-RADIUS = 2
+RADIUS = 4
 
 
 
@@ -37,17 +37,23 @@ class Maker:
         x0, y0 = self.s
         x1, y1 = self.e
 
-        # m = ((y1 * y + x1 * x - y0 * y - x0 * x) * (x1 - x0) + (
-        #     x1 * y0 - x0 * y1) * (y1 - y0)) / (
-        #         (y1 - y0) * (y1 - y0) + (x1 - x0) * (x1 - x0))
-        # n = ((y1 * y + x1 * x - y0 * y - x0 * x) * (y1 - y0) - (
-        #     x1 * y0 - x0 * y1) * (x1 - x0)) / (
-        #         (y1 - y0) * (y1 - y0) + (x1 - x0) * (x1 - x0))
-        # mid_point_x = (m + x1) / 2
-        # mid_point_y = (n + y1) / 2
+        p = x1 - x0
+        q = y1 - y0
 
-        mid_point_x = x1
-        mid_point_y = y1
+        # k = (x * p + y * q) / (p **2 + q ** 2)
+
+        a = (x*(p**2) + y*p*q - y0*p*q + (q**2)*x0 ) / (p**2 + q**2)
+        b = (x*p*q + y*(q**2) + (p**2)*y0 - p*q*x0) / (p**2 + q**2)
+
+
+        mid_point_x = (x1 + 2*a) / 3
+        mid_point_y = (y1 + 2*b) / 3
+
+        # mid_point_x = (x1 + a) / 2
+        # mid_point_y = (y1 + b) / 2
+
+        # mid_point_x = x1
+        # mid_point_y = y1
 
         direction = math.atan((mid_point_y - y) / (mid_point_x - x))
 

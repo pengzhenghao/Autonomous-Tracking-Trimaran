@@ -74,24 +74,30 @@ old_state = {
 }
 
 if __name__ == '__main__':
-    pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
-    maker = Maker(points)
-    state = old_state
-    data = []
-    cost = 0
-    for i in range(6000):
 
-        ideal_angle = maker.getDecision(state)
-        cost += maker.getCost(state)
-        if ideal_angle==-1000:
-            break
+    re = []
+    for _ in range(10000):
 
-        output = pid.compute(state['phi'], ideal_angle)
-        output = 0 if abs(output)<5 else output
-        left, right = 1000 + output, 1000
-        data.append([state['x'], state['y'], state['u'], state['v'], state['phi'], state['alpha'], left, right])
-        state = simulate(state, left, right, 0.1)
+        pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
+        maker = Maker(points)
+        state = old_state
+        data = []
+        cost = 0
+        for i in range(6000):
 
+            ideal_angle = maker.getDecision(state)
+            cost += maker.getCost(state)
+            if ideal_angle==-1000:
+                break
+
+            output = pid.compute(state['phi'], ideal_angle)
+            output = 0 if abs(output)<5 else output
+            left, right = 1000 + output, 1000
+            data.append([state['x'], state['y'], state['u'], state['v'], state['phi'], state['alpha'], left, right])
+            state = simulate(state, left, right, 0.1)
+        re.append(cost/i)
+
+    print(np.mean(re))
     file_name = './data/' + time.strftime("%Y-%m-%d__%H:%M", time.localtime())
-    drawer = Drawer()
-    drawer.drawFromData(data, file_name, cost)
+    # drawer = Drawer()
+    # drawer.drawFromData(data, file_name, cost)
