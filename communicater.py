@@ -27,8 +27,8 @@ class Communicater(object):
 
         self.data_down = []
         self.data_up = [None, None]
-        self.file_name = './data/'+time.strftime("%Y-%m-%d__%H:%M", time.localtime())
-        self.f = open( self.file_name + '.csv', 'w')
+        self.file_name = './data/' + time.strftime("%Y-%m-%d__%H:%M", time.localtime())
+        self.f = open(self.file_name + '.csv', 'w')
         self.writer = csv.writer(self.f)
 
         self.dev_gnss.sub_add_url('gps.posx'),
@@ -83,7 +83,7 @@ class Communicater(object):
         return {'x': gps[0], 'y': gps[1], 'u': U, 'v': V, 'phi': yaw, 'alpha': ahrs[1]}
 
     def upload(self, left, right):
-        self.dev.pub_set1('pro.left.sp1eed', left)
+        self.dev.pub_set1('pro.left.speed', left)
         self.dev.pub_set1('pro.right.speed', right)
         self.data_up = [left, right]
         print('uploaded', left, right)
@@ -93,6 +93,7 @@ class Communicater(object):
         print('Saved: ', self.data_down + self.data_up)
 
     def __del__(self):
+        self.upload(0, 0)
         self.dev.close()
         self.f.close()
 
@@ -106,7 +107,6 @@ if __name__ == "__main__":
         try:
             with t:
                 c.getNEData()
-                # c.upload(0, 0)
                 c.record()
         except KeyboardInterrupt as e:
             c.__del__()

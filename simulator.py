@@ -64,8 +64,8 @@ points = [
 
 # 这里随机生成状态
 old_state = {
-    'x': normal(),
-    'y': normal(),
+    'x': 0,
+    'y': 0,
     'u': normal(0, 0.2),
     'v': normal(0, 0.2),
     # 'phi': np.random.rand() * 2 * pi,
@@ -76,7 +76,7 @@ old_state = {
 if __name__ == '__main__':
 
     re = []
-    for _ in range(10000):
+    for _ in range(1):
 
         pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
         maker = Maker(points)

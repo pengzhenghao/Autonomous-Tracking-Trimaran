@@ -11,14 +11,19 @@ class Drawer():
     def __init__(self):
         pass
 
-    def drawFromData(self, data, name, cost=None):
-        self.draw(data, name, cost)
+    def drawFromData(self, data, name, cost=None, points=None):
+        self.draw(data, name, cost, points)
 
     def drawFromFile(self, name):
-        data = self.readOneCsvFile(name + '.csv')
-        self.draw(data, name)
+        name = './data/' + name
+        data = self.readOneCsvFile(name)
+        data = [[eval(j) for j in i] for i in data]
+        x = data[:-2]
+        cost = data[-2]
+        points = data[-1][0]
+        self.draw(x, name, cost, points)
 
-    def draw(self, data, name, cost=None):
+    def draw(self, data, name, cost=None, points=None):
         fig = plt.figure(figsize=(17, 8))
         fig.suptitle(name+'\n Cost: '+str(cost))
         gs = GridSpec(3, 2)
@@ -31,11 +36,14 @@ class Drawer():
         axpo = fig.add_subplot(gs[1, 1])
         axlr = fig.add_subplot(gs[2, 1])
 
-        axxy.plot([0,0,50,50,0], [0, 50, 50, 0, 0], 'r--')
+        x = [p[0] for p in points]
+        y = [p[1] for p in points]
+
+        axxy.plot(y, x, 'r--')
 
         axxy.set_aspect(1)
-        axxy.set_ylim(-20, 70)
-        axxy.set_xlim(-20, 70)
+        axxy.set_ylim(min(x)-20, max(x)+20)
+        axxy.set_xlim(min(y)-20, max(y)+20)
 
         astate = np.array(data)
         astate = astate.transpose()
@@ -64,3 +72,12 @@ class Drawer():
             r = csv.reader(f)
             re = [i for i in r]
         return re
+
+import time
+if __name__=='__main__':
+
+    file_name = input('请输入文件名')
+
+    # file_name = './fig/' + time.strftime("%Y-%m-%d__%H:%M", time.localtime())
+    drawer = Drawer()
+    drawer.drawFromFile(file_name)
