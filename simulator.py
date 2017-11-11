@@ -76,7 +76,7 @@ old_state = {
 if __name__ == '__main__':
 
     re = []
-    for _ in range(1):
+    for _ in range(10000):
 
         pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
         maker = Maker(points)

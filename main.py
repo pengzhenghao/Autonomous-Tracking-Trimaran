@@ -10,7 +10,11 @@ kp = 800
 ki = 3
 kd = 10
 
-points = [
+
+initial_points = [10000, 0]
+
+
+ideal_points = [
     [-42, 46],
     [-17, -34],
     [-85, -24],
@@ -18,10 +22,14 @@ points = [
     [-42, 46]
 ]
 
+
 if __name__ == '__main__':
     c = Communicater()
     pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
     timer = PeriodTimer(0.1)
+
+    points = [[p[0] + initial_points[0], p[1] + initial_points[1]] for p in ideal_points]
+
 
     maker = Maker(points)
     cost = 0
