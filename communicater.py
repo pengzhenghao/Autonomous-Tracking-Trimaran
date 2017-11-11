@@ -10,7 +10,7 @@ class Communicater(object):
         self.dev = MsgDevice()
         self.dev.open()
         self.dev.sub_connect('tcp://192.168.1.150:55003')  # 下载端口
-        self.dev.pub_bind('tcp://0.0.0.0:55002')  # 上传端口
+        self.dev.pub_bind('tcp://0.0.0.0:55010')  # 上传端口
         self.dev.sub_add_url('')
 
         self.dev_gnss = MsgDevice()
