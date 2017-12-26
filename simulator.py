@@ -62,42 +62,70 @@ points = [
     [0, 0]
 ]
 
-# 这里随机生成状态
+
+star = [
+    [-20, 10],
+    [-70, -8],
+    [-35, 40],
+    [-35, -20],
+    [-70, 28],
+    [-20, 10]
+]
+
+points = star
+
+# 这里随机生成状
 old_state = {
     'x': 0,
     'y': 0,
     'u': normal(0, 0.2),
     'v': normal(0, 0.2),
     # 'phi': np.random.rand() * 2 * pi,
-    'phi': 3.14159/4,
+    'phi': 3.14159 / 4,
     'alpha': normal(0, 0.01)
 }
 
 if __name__ == '__main__':
-
+    cost = []
     re = []
-    for _ in range(10000):
+    drawer = Drawer()
+    # drawer.animation_initialize(points)
 
-        pid = PID(kp=kp, ki=ki, kd=kd, minout=-2500, maxout=500, sampleTime=0.1)
-        maker = Maker(points)
+
+    for j in range(0,2):
+        pid = PID(kp=kp, ki=ki, kd=kd, minout=-2000, maxout=2000, sampleTime=0.1)
+        maker = Maker(points, 3)
         state = old_state
         data = []
-        cost = 0
+        cost = []
+        decay_factor = 1
+        baseline = 1000
         for i in range(6000):
 
-            ideal_angle = maker.getDecision(state)
-            cost += maker.getCost(state)
-            if ideal_angle==-1000:
+            # ideal_angle = maker.LOGMaker(state, radius=6)
+
+            ideal_angle, decay_factor = maker.wrapper_LOG(state, radius=6, decay_radius=5)
+            cost.append(maker.getCost(state))
+            if ideal_angle == -1000:
                 break
 
             output = pid.compute(state['phi'], ideal_angle)
-            output = 0 if abs(output)<5 else output
-            left, right = 1000 + output, 1000
-            data.append([state['x'], state['y'], state['u'], state['v'], state['phi'], state['alpha'], left, right])
-            state = simulate(state, left, right, 0.1)
-        re.append(cost/i)
+            output = 0 if abs(output) < 5 else output
 
-    print(np.mean(re))
+
+            # baseline = 1000 * decay_factor
+            left, right = baseline + output/2, baseline - output/2
+            left = max(min(left, 2000), -2000)
+            right = max(min(right, 2000), -2000)
+            adata = [state['x'], state['y'], state['u'], state['v'], state['phi'], state['alpha'], left, right]
+            data.append(adata)
+            state = simulate(state, left, right, 0.1)
+
+        print('decay_radius=',j,' cost=', np.mean(cost), 'now', i)
+
+        re.append(np.mean(cost))
+
+    print(re)
     file_name = './data/' + time.strftime("%Y-%m-%d__%H:%M", time.localtime())
     # drawer = Drawer()
-    # drawer.drawFromData(data, file_name, cost)
+    # drawer.drawFromData(data, file_name, np.mean(cost), points)

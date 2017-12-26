@@ -1,17 +1,44 @@
 import math
 from math import pi
 
-RADIUS = 4
-
 
 class Maker:
-    def __init__(self, points):
+    def __init__(self, points, radius=3):
         self.points = points
         self.s = points[0]
         self.e = points[1]
         self.pointer = 0
+        self.RADIUS = radius
+
+
+    def wrapper_LOG(self, state, radius, decay_radius):
+        direction = self.LOGMaker(state, radius)
+        x, y = state['x'], state['y']
+
+        if self.pointer != 0:
+            dis = (self.e[0] - x ) ** 2 + (self.e[1] - y ) ** 2
+            dis_s = (self.s[0] - x ) ** 2 + (self.s[1] - y ) ** 2
+            if dis < (decay_radius ** 2):
+                return direction, math.sqrt(dis)/decay_radius
+            if dis_s < (decay_radius ** 2):
+                return direction, math.sqrt(dis_s)/decay_radius
+        return direction, 1
+
+    def wrapper_divide(self, state, decay_radius):
+        direction = self.getDecision(state)
+        x, y = state['x'], state['y']
+        if self.pointer != 0:
+            dis = (self.e[0] - x ) ** 2 + (self.e[1] - y ) ** 2
+            if dis < decay_radius ** 2:
+                print('now dis', dis)
+                # return direction, 1 - math.exp(-math.sqrt(dis))
+                return direction, math.sqrt(dis)/decay_radius
+        return direction, 1
+
 
     def getCost(self, state):
+        if self.pointer==0:
+            return 0
         x, y = state['x'], state['y']
         a, b = self._calculateFootPoint(x, y)
         return (a - x) ** 2 + (b - y) ** 2
@@ -30,11 +57,9 @@ class Maker:
         x1, y1 = self.e
 
         if self.pointer==0:
-            if ((x0 - x) ** 2 + (y0 - y) ** 2) < RADIUS ** 2:
-                self.pointer += 1
-            return math.atan2(y1 - y, x1 - x)
+            return self._inintialDirection(x, y)
 
-        if ((x1 - x) ** 2 + (y1 - y) ** 2) < RADIUS ** 2:
+        if ((x1 - x) ** 2 + (y1 - y) ** 2) < self.RADIUS ** 2:
             if self.pointer == (len(self.points) - 1):
                 return -1000
             self._updateStartAndEndPoint()
@@ -46,6 +71,50 @@ class Maker:
 
         direction = math.atan2(mid_point_y - y, mid_point_x - x)
 
+        return direction
+
+    def LOGMaker(self, state, radius):
+        x = state['x']
+        y = state['y']
+
+        if self.pointer==0:
+            return self._inintialDirection(x, y)
+
+        x0, y0 = self.s
+        x1, y1 = self.e
+
+        a, b = self._calculateFootPoint(x, y)
+
+        distance = ((x - a) ** 2 + (y - b) ** 2) ** 0.5
+
+        if distance >= radius:
+            direction = math.atan2((b - y), (a - x))
+            direction = direction + 2*pi if direction < 0 else direction
+            return direction
+
+        else:
+            along_distance = (radius ** 2 - distance ** 2) ** 0.5
+            angle = math.atan2((y1 - y0), (x1 - x0))
+
+            m = a + along_distance * math.cos(angle)
+            n = b + along_distance * math.sin(angle)
+
+            direction = math.atan2((n - y), (m - x))
+            direction = direction + 2*pi if direction < 0 else direction
+
+            if ((x1 - x) ** 2 + (y1 - y) ** 2) < self.RADIUS ** 2:
+                if self.pointer == (len(self.points) - 1):
+                    return -1000
+                self._updateStartAndEndPoint()
+            return direction
+
+    def _inintialDirection(self, x, y):
+        x0, y0 = self.s
+        x1, y1 = self.e
+        if ((x0 - x) ** 2 + (y0 - y) ** 2) < (self.RADIUS+1) ** 2:
+            self.pointer += 1
+        direction = math.atan2(y0 - y, x0 - x)
+        direction = direction + 2*pi if direction<0 else direction
         return direction
 
     def _updateStartAndEndPoint(self):

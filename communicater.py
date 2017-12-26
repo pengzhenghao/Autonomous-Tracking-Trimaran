@@ -6,12 +6,14 @@ from msgdev import MsgDevice, PeriodTimer
 
 
 class Communicater(object):
-    def __init__(self):
+    def __init__(self, upload=True):
         self.dev = MsgDevice()
         self.dev.open()
         self.dev.sub_connect('tcp://192.168.1.150:55003')  # 下载端口
-        self.dev.pub_bind('tcp://0.0.0.0:55010')  # 上传端口
-        self.dev.sub_add_url('')
+        self.upload_flag = upload
+        if upload:
+            self.dev.pub_bind('tcp://0.0.0.0:55010')  # 上传端口
+            self.dev.sub_add_url('')
 
         self.dev_gnss = MsgDevice()
         self.dev_gnss.open()
@@ -80,13 +82,17 @@ class Communicater(object):
         U = gps[3] * math.cos(gps[5])  # 北东系速度
         V = gps[3] * math.sin(gps[5])
         self.data_down = [gps[0], gps[1], U, V, yaw, ahrs[1]]
-        return {'x': gps[0], 'y': gps[1], 'u': U, 'v': V, 'phi': yaw, 'alpha': ahrs[1]}
+        return {'x': gps[0], 'y': gps[1], 'u': U, 'v': V, 'phi': yaw, 'alpha': ahrs[1], 'lm':l_m,'rm':r_m}
 
     def upload(self, left, right):
-        self.dev.pub_set1('pro.left.speed', left)
-        self.dev.pub_set1('pro.right.speed', right)
-        self.data_up = [left, right]
-        print('uploaded', left, right)
+        if self.upload_flag:
+            self.dev.pub_set1('pro.left.speed', left)
+            self.dev.pub_set1('pro.right.speed', right)
+            self.data_up = [left, right]
+            print('uploaded', left, right)
+        else:
+            self.data_up = [-1, -1]
+            print('upload disabled')
 
     def record(self):
         self.writer.writerow(self.data_down + self.data_up)
@@ -100,7 +106,7 @@ class Communicater(object):
 
 if __name__ == "__main__":
     lis = []
-    c = Communicater()
+    c = Communicater(upload=False)
     t = PeriodTimer(0.1)
     t.start()
     while True:
