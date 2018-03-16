@@ -1,5 +1,6 @@
 # 概述
-本程序提供了循迹算法的试验平台，你可以自己实现循迹算法并进行仿真。感谢秦操学长提供的三体船仿真模型。PID参数已经粗略调整，但未经实船实验。
+本程序提供了循迹算法的试验平台，你可以自己实现循迹算法并进行仿真。感谢秦操学长提供的三体船仿真模型。
+![三体船](https://github.com/PengZhenghao/Trimaran-Tracking-Algorithm-Simulation-Experiment-Platform/blob/master/trimaran.jpg)
 
 # 环境
 在使用之前，你需要安装以下支持
